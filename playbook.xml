@@ -1,0 +1,66 @@
+---
+- hosts: wordpress
+  vars:
+    wordpress_url: https://ja.wordpress.org/latest-ja.tar.gz
+    mysql_user: wordpress
+    mysql_password: QuieBaep0jahng9a
+    mysql_database: wordpress
+  remote_user: vagrant
+  become: yes
+
+  tasks:
+   - name: apt update
+     apt:
+       update_cache: yes
+       state: present
+     become: yes 
+
+   - name: apache install
+     apt:
+       pkg:
+        - apache2
+        - php
+        - php-mysql
+        - mysql-server
+        - mysql-client
+        - python3-pymysql
+
+   - name: change mysql default authentication plugin
+     ini_file:
+       state: present
+       path: /etc/mysql/my.cnf
+       section: mysqld
+       option: default-authentication-plugin
+       value: mysql_native_password
+
+   - name: restart mysql
+     systemd:
+       name: mysql
+       state: restarted
+       enabled: yes
+
+   - name: create mysql database
+     mysql_db: 
+       db: "{{ mysql_database }}"
+       state: present
+       login_unix_socket: /var/run/mysqld/mysqld.sock
+
+   - name:
+     mysql_user: 
+       name: "{{ mysql_user }}" 
+       host: "localhost" 
+       password: "{{ mysql_password }}" 
+       priv: "{{ mysql_database }}.*:ALL,GRANT"
+       state: present
+       login_unix_socket: /var/run/mysqld/mysqld.sock
+
+   - name: wordpress download
+     get_url:
+      url: "{{ wordpress_url }}"
+      dest: "/tmp/wordpress.tar.gz"
+
+   - name: unarchive wordpress
+     unarchive: src=/tmp/wordpress.tar.gz dest=/var/www/html/ copy=no
+
+   - name: modify wordpress file permission
+     file: path=/var/www/html/wordpress/ owner=www-data group=www-data recurse=yes
