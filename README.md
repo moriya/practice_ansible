@@ -17,8 +17,8 @@ Ubuntu on WSL2
 git clone https://github.com/moriya/practice_ansible.git
 
 ### 設定ファイルの変更
-inventory/hosts に 管理対象ノードのIPアドレスを設定する
-private_key にssh秘密鍵を設定する
+- inventory/hosts に 管理対象ノードのIPアドレスを設定する
+- private_key にssh秘密鍵を設定する
 
 ### ansibleの実行
 
