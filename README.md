@@ -22,4 +22,4 @@ git clone https://github.com/moriya/practice_ansible.git
 
 ### ansibleの実行
 
-ansible-playbook playbook.xml
+ansible-playbook playbook.yml
